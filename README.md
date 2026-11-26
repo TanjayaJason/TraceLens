@@ -40,7 +40,7 @@ git clone https://github.com/TanjayaJason/TraceLens.git
 cd TraceLens
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install -e ".[ai]"
+python -m pip install -r requirements.txt
 Copy-Item .env.example .env
 ```
 
@@ -96,9 +96,13 @@ Read the [PRD](docs/PRD.md), [design](docs/DESIGN.md), and [delivery status](doc
 ## Running the offline checks
 
 ```powershell
-pip install -e ".[dev]"
+python -m pip install -r requirements.txt
 python -m pytest -q
 python -m pip check
 ```
 
 Tests use synthetic inputs and block external connections. PageProof permits loopback sockets for Windows asyncio. Model response validation uses local fakes, never a live LLM. Local examples and the test suites do not need an API key.
+
+## Dependency manifest
+
+`requirements.txt` installs the editable project and all declared extras (including tests and optional AI integrations). It reads version constraints from `pyproject.toml`; pip resolves transitive dependencies. Run it from the repository root. This file is an installation entry point, not a frozen dependency lock. An API key is not required for installation or offline tests.

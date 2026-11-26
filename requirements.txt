@@ -1,0 +1,4 @@
+# Run from the repository root: python -m pip install -r requirements.txt
+# pyproject.toml is the single source of dependency versions.
+# Includes the project CLI, runtime dependencies, and all declared extras.
+-e .[ai,dev]
