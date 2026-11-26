@@ -1,55 +1,94 @@
 # TraceLens
 
-> Turn noisy application logs into a clear incident trail.
+### Find the incident inside the noise.
 
-Developers spend too long scanning large log files to find the event sequence, likely failure point, and next useful debugging step.
+![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
+![Status](https://img.shields.io/badge/status-initial_implementation-orange)
+![Validation](https://img.shields.io/badge/runtime-not_tested-lightgrey)
 
-## Why this project
+A read-only log investigation CLI. It preserves line references, selects error windows, groups repeated failures, and optionally asks an LLM to explain the evidence.
 
-Individual developers and small engineering teams debugging local applications.
+> **Portfolio release:** initial implementation. Runtime, dependencies, and model behavior have not been tested. The commands below describe intended usage, not verified results.
 
-TraceLens is a portfolio project focused on a narrow, demonstrable workflow: useful AI assistance with visible evidence, predictable limits, and a clear local-first story.
+## What you can explore
 
-## Product snapshot
+| Capability | Implementation |
+|---|---|
+| Timeline | Original line numbers, ISO-like timestamps, and normalized severity |
+| Context selection | Two lines before and after errors; bounded to 80 lines |
+| Error clusters | Group repeated error text with numeric values normalized |
+| Redaction | Common key/value secrets, authorization headers, URL credentials, and email patterns |
+| AI analysis | Separate observations, hypotheses, and diagnostic suggestions |
 
-- **Input:** Plain-text application logs and an optional short incident question.
-- **Output:** Timeline, likely error cluster, cited log lines, and suggested next diagnostic checks clearly marked as hypotheses.
-- **MVP:** Ingest a local log file, normalize common timestamp and severity formats, group related events, summarize the incident timeline with an LLM, and link every observation to exact line numbers.
+## How it fits together
 
-## Planned architecture
+```mermaid
+flowchart LR
+    A[UTF-8 log] --> B[Normalize severity and timestamp]
+    B --> C[Redact common secret patterns]
+    C --> D[Select error windows and clusters]
+    D --> E[Markdown or JSON report]
+    D --> F[Optional structured LLM summary]
+```
 
-CLI accepts a path and optional question. A bounded reader enforces size limits and redacts common secrets before model calls. Parsers normalize timestamps/levels while preserving original line numbers. Deterministic grouping selects relevant windows. The summarizer emits schema-validated claims, each with line references. Output supports readable Markdown and JSON. The tool never executes suggested commands.
+## Quick start
 
-## Current status
+Use Python 3.11 or newer. Run from the repository root. Git is also required for CodeTrail.
 
-**Planning scaffold.** The product requirements, design, project skill, and agent guidance are in place. Application implementation has not started.
+```powershell
+git clone https://github.com/TanjayaJason/TraceLens.git
+cd TraceLens
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -e ".[ai]"
+Copy-Item .env.example .env
+```
 
-## Getting started
+Skip the copy if `.env` already exists. On macOS/Linux, activate with `source .venv/bin/activate` and copy with `cp .env.example .env`.
 
-The MVP is planned for Python 3.11+. Clone this repository and review the product and design docs before implementation. Runtime setup instructions will be added with the first working release.
+```powershell
+tracelens examples/incident.log
+tracelens examples/incident.log --json
+```
 
-For local LLM configuration, copy the variable names from .env and add your own values. .env is intentionally ignored by Git; never commit API keys.
+## Optional AI mode
 
-## Roadmap
+Fill `OPENAI_API_KEY` and `OPENAI_MODEL` in your local `.env`. Set `OPENAI_BASE_URL` only when using a compatible endpoint. The endpoint must support tool/function calling. Installing the AI extra does not enable model calls: opt in with `--ai` or the PageProof sidebar toggle.
 
-1. Implement the smallest end-to-end MVP described in the PRD.
-2. Add representative fixtures and quality checks.
-3. Document setup, limitations, and a short demo.
-4. Revisit optional integrations only when they solve a demonstrated need.
+```powershell
+tracelens examples/incident.log --ai --question "Why did checkout fail?"
+```
 
-## Safety and privacy
+Provider calls use a 45-second timeout and no automatic retries. Invalid structured responses are rejected. No API keys are included in this repository.
 
-Secrets in logs, malformed formats, hallucinated causes, huge files, and accidental destructive remediation suggestions.
+## Limits you should know
 
-The design defaults to local processing where practical and minimizes what is sent to external model providers. Do not use real sensitive data in examples or screenshots.
+UTF-8 text, at most 10 MB and 100,000 lines. Individual lines are truncated at 1,500 characters in reports. The first 80 selected context lines are used; later incidents may be omitted. Redaction is heuristic and does not guarantee removal of all secrets. Citation validation checks line existence, not the truth of a diagnosis. The CLI never executes proposed diagnostic steps.
 
-## Project documents
+User input is treated as evidence, never executable instructions. Model output remains advisory. Keep private documents, logs, datasets, repositories, and generated reports out of Git; `data/`, `reports/`, and `.env` are ignored.
 
-- [Product requirements](docs/PRD.md)
-- [Technical design](docs/DESIGN.md)
-- [Project skill](.agents/skills/tracelens/SKILL.md)
-- [Agent guidance](AGENTS.md)
+## Repository guide
 
-## License
+```text
+src/tracelens/
+  core.py          Domain logic and evidence handling
+  cli.py           Command-line entry point
+  support.py       Bounded input and optional provider boundary
+docs/
+  PRD.md           Product scope and acceptance goals
+  DESIGN.md        Architecture and implementation decisions
+  STATUS.md        Delivery and validation status
+.agents/skills/tracelens/SKILL.md
+AGENTS.md          Guidance for future coding work
+.env.example       Empty configuration template
+```
 
-License not selected yet.
+## Where this goes next
+
+- Expand structured JSON and Nginx parsing.
+- Add selectable incident windows and relevance ranking.
+- Evaluate redaction coverage with synthetic secret patterns.
+
+## Project notes
+
+Read the [PRD](docs/PRD.md), [design](docs/DESIGN.md), and [delivery status](docs/STATUS.md) for scope and tradeoffs. This release intentionally has no evaluation results or benchmark claims. A license has not been selected; no broad reuse rights are implied.

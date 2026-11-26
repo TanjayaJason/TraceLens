@@ -1,0 +1,6 @@
+2026-01-01T10:00:00Z INFO API started on port 8000
+2026-01-01T10:00:01Z INFO request id=42 route=/checkout
+2026-01-01T10:00:02Z WARNING Database pool nearly exhausted
+2026-01-01T10:00:03Z ERROR Database connection timeout request=42
+2026-01-01T10:00:04Z INFO request id=42 status=503
+2026-01-01T10:00:05Z ERROR Database connection timeout request=43

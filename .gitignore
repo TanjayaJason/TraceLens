@@ -17,3 +17,11 @@ venv/
 htmlcov/
 .DS_Store
 Thumbs.db
+
+# Local inputs, reports, and build artifacts
+data/
+reports/
+dist/
+build/
+*.egg-info/
+.streamlit/secrets.toml

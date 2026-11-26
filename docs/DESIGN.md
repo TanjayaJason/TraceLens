@@ -53,3 +53,11 @@ Keep evaluation fixtures synthetic or public-domain. Track quality separately fr
 3. Add optional model synthesis with bounded context and schema validation.
 4. Add fixtures and evaluation measurements.
 5. Write setup and demo instructions after the workflow is usable.
+
+## 10. Initial implementation decisions
+
+Typer handles the CLI; regex and standard-library counters handle normalization and grouping. The optional model layer uses LangChain structured output with Pydantic validation. Timestamps are extracted as strings, not converted across time zones. Plain text and common severity words are the initial supported format.
+
+See [STATUS.md](STATUS.md) for validation status.
+
+Provider integration reference: [LangChain structured output](https://reference.langchain.com/python/langchain-openai/chat_models/base/BaseChatOpenAI/with_structured_output).

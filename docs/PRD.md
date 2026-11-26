@@ -63,3 +63,7 @@ The first portfolio milestone is a reproducible demo and a small evaluation repo
 - Choose the exact UI and packaging approach during implementation based on the first end-to-end slice.
 - Select one model/provider configuration and document alternatives only after the core workflow works.
 - Confirm license and contribution policy before inviting external contributions.
+
+## 9. Delivery note
+
+The initial implementation is available, but MVP acceptance remains open until runtime and quality evaluation are performed. Testing and live model calls were explicitly excluded from this delivery. Scope adjustments and deferred features are recorded in DESIGN.md.
