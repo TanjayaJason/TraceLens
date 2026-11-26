@@ -6,7 +6,9 @@ from .support import read_text, model_result
 
 def redact(text):
     text = re.sub(r'(?i)(authorization["\s]*[:=][ "]*(?:bearer|basic)\s+)[^\s,;"\']+', r'\1[REDACTED]', text)
-    text = re.sub(r'(?i)((?:api[_-]?key|password|passwd|secret|token)["\s]*[:=]\s*)["\']?[^\s,;"\']+', r'\1[REDACTED]', text)
+    text = re.sub(
+        r'''(?i)((?:api[_-]?key|password|passwd|secret|token)["'\s]*[:=]\s*)(?:"[^"\r\n]*"|'[^'\r\n]*'|[^\s,;]+)''',
+        r'\1[REDACTED]', text)
     text = re.sub(r'(?i)(https?://)[^/@\s:]+:[^/@\s]+@', r'\1[REDACTED]@', text)
     text = re.sub(r'\b(?:sk-[A-Za-z0-9_-]{12,}|gh[pousr]_[A-Za-z0-9_]{16,})\b', '[REDACTED]', text)
     return re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b', '[EMAIL]', text)
@@ -45,7 +47,13 @@ def analyze(path: Path, question='', ai=False):
         windows.update(range(min(len(lines), 40)))
     # Keep first incident windows deterministic and cap external context.
     selected = [records[i] for i in sorted(windows)[:80]]
-    groups = Counter(re.sub(r'\b\d+\b', '#', records[i]['text']) for i in errors)
+    groups = Counter()
+    for i in errors:
+        event = records[i]
+        pattern = event['text']
+        if event['timestamp']:
+            pattern = pattern.replace(event['timestamp'], '<timestamp>', 1)
+        groups[re.sub(r'\b\d+\b', '#', pattern)] += 1
     result = {'total_lines': len(lines), 'levels': dict(Counter(r['level'] for r in records)),
               'error_clusters': [{'pattern': p, 'count': n} for p, n in groups.most_common(10)],
               'timeline': selected, 'omitted_context_lines': len(windows) - len(selected),

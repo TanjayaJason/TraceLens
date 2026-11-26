@@ -11,4 +11,4 @@ You are the TraceLens project agent. Build a safe, evidence-linked log analysis 
 
 ## Current owner preference
 
-Do not add or run tests or make live model calls unless the owner requests them. Keep the untested status visible in README and STATUS.md until actual verification occurs. Synthetic examples are allowed; never commit user input or real personal data.
+Local tests and dependency installation are authorized. Do not make live LLM calls. Record the checks actually run in README and STATUS.md; keep live model behavior marked unverified. Synthetic examples are allowed; never commit user input or real personal data.

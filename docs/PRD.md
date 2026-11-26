@@ -66,4 +66,4 @@ The first portfolio milestone is a reproducible demo and a small evaluation repo
 
 ## 9. Delivery note
 
-The initial implementation is available, but MVP acceptance remains open until runtime and quality evaluation are performed. Testing and live model calls were explicitly excluded from this delivery. Scope adjustments and deferred features are recorded in DESIGN.md.
+The initial implementation is available and offline runtime checks now pass. Local testing was authorized after the initial delivery; live model calls remain excluded. Model quality evaluation and broader MVP acceptance remain open. Scope adjustments and deferred features are recorded in DESIGN.md.
